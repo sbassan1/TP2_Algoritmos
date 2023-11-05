@@ -5,6 +5,8 @@ como Arrays ordenados a base de IdPartidos y IdDistritos para sacar con O(1)
 #Alternativa (Carlos): rango de mesas como int[], implementamos la busqueda como busqueda binaria directamente sobre el array.
               De esta manera, aprovechamos que el Array en el que nos pasan las mesas ya está ordenado y nos ahorramos implementar AVL.
 
+la division en java sobre ints funciona como si fuera un numero real, pero saca los numeros decimales 7/3 = 2
+
 #usar un heap para el D'hont de resultadosDiputados
 
 #Hay que armar por el momento 2 clases de estructuras: AVL y heap.
