@@ -1,6 +1,13 @@
 package aed;
 public class SistemaCNE {
-    // Completar atributos privados
+    private String[] nombresPartidos;
+    private int[] votosPresidenciales;
+    private String[] nombresDistristos;
+    private int[] diputadosPorDistrito;
+    private int[] ultimasMesasDistritos;
+    private int[][] votosDiputadosPorDistrito;
+    private ListaEnlazada mesasRegistradas;
+    private ColaPrioridadAcotada dHondt;
 
     public class VotosPartido{
         private int presidente;
