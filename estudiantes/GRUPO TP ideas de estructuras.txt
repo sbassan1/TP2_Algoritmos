@@ -1,17 +1,34 @@
-
 #nombres de partidos, nombres de distritos y diputados en disputa 
 como Arrays ordenados a base de IdPartidos y IdDistritos para sacar con O(1)
 
-#rango de mesas como un avl para buscar el rango con IdMesa en O(log n)
+#rango de mesas como un avl para buscar el rango con IdMesa en O(log n).
+#Alternativa (Carlos): rango de mesas como int[], implementamos la busqueda como busqueda binaria directamente sobre el array.
+              De esta manera, aprovechamos que el Array en el que nos pasan las mesas ya está ordenado y nos ahorramos implementar AVL.
 
 #usar un heap para el D'hont de resultadosDiputados
 
 #Hay que armar por el momento 2 clases de estructuras: AVL y heap.
 
-#Hay que discutir la implementacion de heap para ver si hay elementos repetidos
-(lo charlamos en clase, no recurdo bien porqué)
+#Hay que discutir la implementacion de heap para ver si hay elementos repetidos. 
+(Carlos:) Como no hay repetidos en la matriz DHondt, no importaria mucho que hacemos con los repetido en el heap.
 
 Usemos en lo posible este block para discutir o poner ideas 
 del tp para dicutir asi no se llena el wpp y es mas facil coordinar.
 
 -Santi
+
+##
+
+Ademas de lo que dijo Santi arriba, en las variables de clase deberiamos tener:
+
+int[] votosPrescidenciales --> inicializado en el constructor con longitud |nombrePartidos|
+int[][] votosDiputadosPorDistrito --> inicializado en el constructor con longitud D x P.
+ListaEnlazada mesasRegistradas
+
+***Mesas Registradas: la funcion registrarMesa() pide que vayamos guardando las mesas que ya fueron registradas. En el TAD se observa con un conjunto.
+                      Como en ninguna parte del TP nos piden que busquemos si una mesa fue o no registrada, vamos a estar haciendo mas que nada inserciones.
+                      Como opciones, podría ser usar array de Bool o lista enlazada. Inicialmente ocupa menos memoria la lista enlazada, pero a medida que se registran mesas, se vuelve mas eficiente en memoria el array. En tiempo, la insercion en los dos es 0(1). Pero creo que la creacion del array es O(n) = O(mesas), lo cual nos caga. Con lo cual parece que tendria que ser una lista enlazada.
+
+-Carlos
+
+##
