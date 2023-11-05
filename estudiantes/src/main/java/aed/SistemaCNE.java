@@ -45,14 +45,13 @@ public class SistemaCNE {
         int indiceInicio = 0;
         int indiceFinal = ultimasMesasDistritos.length-1;
         int medio;
-        int i;
-        int rangoMenor = ultimasMesasDistritos[i-1];
-        int rangoMayor = ultimasMesasDistritos[i];
-
+        int i = 0;
 
         while(indiceInicio<=indiceFinal){
             medio = (indiceInicio+indiceFinal)/2;
             i = medio;
+            int rangoMenor = ultimasMesasDistritos[i-1];
+            int rangoMayor = ultimasMesasDistritos[i];
             if (enRango(rangoMenor, rangoMayor, idMesa)){
                 return nombreDistrito(i);
             }
@@ -62,7 +61,7 @@ public class SistemaCNE {
                 indiceInicio = medio + 1;
             }
         }
-        
+        return nombreDistrito(i);
     }
 
     public void registrarMesa(int idMesa, VotosPartido[] actaMesa) {
