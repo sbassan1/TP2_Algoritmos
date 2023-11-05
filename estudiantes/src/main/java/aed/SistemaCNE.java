@@ -18,23 +18,51 @@ public class SistemaCNE {
     }
 
     public SistemaCNE(String[] nombresDistritos, int[] diputadosPorDistrito, String[] nombresPartidos, int[] ultimasMesasDistritos) {
-        throw new UnsupportedOperationException("No implementada aun");
+        this.nombresDistristos = nombresDistritos;
+        this.diputadosPorDistrito = diputadosPorDistrito;
+        this.nombresPartidos = nombresPartidos;
+        this.ultimasMesasDistritos = ultimasMesasDistritos;
     }
 
     public String nombrePartido(int idPartido) {
-        throw new UnsupportedOperationException("No implementada aun");
+        return nombresPartidos[idPartido];
     }
 
     public String nombreDistrito(int idDistrito) {
-        throw new UnsupportedOperationException("No implementada aun");
+        return nombresDistristos[idDistrito];
     }
 
     public int diputadosEnDisputa(int idDistrito) {
-        throw new UnsupportedOperationException("No implementada aun");
+        return diputadosPorDistrito[idDistrito];
     }
 
+    public Boolean enRango(int min, int max, int elem){
+        return (elem >= min && elem < max);    
+        
+    }
     public String distritoDeMesa(int idMesa) {
-        throw new UnsupportedOperationException("No implementada aun");
+        int indiceInicio = 0;
+        int indiceFinal = ultimasMesasDistritos.length-1;
+        int medio;
+        int i;
+        int rangoMenor = ultimasMesasDistritos[i-1];
+        int rangoMayor = ultimasMesasDistritos[i];
+
+
+        while(indiceInicio<=indiceFinal){
+            medio = (indiceInicio+indiceFinal)/2;
+            i = medio;
+            if (enRango(rangoMenor, rangoMayor, idMesa)){
+                return nombreDistrito(i);
+            }
+            else if (idMesa < ultimasMesasDistritos[medio]){
+                indiceFinal = medio - 1;
+            } else {
+                indiceInicio = medio + 1;
+            }
+        }
+
+        
     }
 
     public void registrarMesa(int idMesa, VotosPartido[] actaMesa) {
@@ -42,11 +70,11 @@ public class SistemaCNE {
     }
 
     public int votosPresidenciales(int idPartido) {
-        throw new UnsupportedOperationException("No implementada aun");
+        return votosPresidenciales[idPartido];
     }
 
     public int votosDiputados(int idPartido, int idDistrito) {
-        throw new UnsupportedOperationException("No implementada aun");
+        return votosDiputadosPorDistrito[idPartido][idDistrito];
     }
 
     public int[] resultadosDiputados(int idDistrito){
