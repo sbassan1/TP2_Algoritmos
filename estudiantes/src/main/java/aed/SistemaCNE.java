@@ -6,6 +6,7 @@ public class SistemaCNE {
     private int[] diputadosPorDistrito;
     private int[] ultimasMesasDistritos;
     private int[][] votosDiputadosPorDistrito;
+    private int[][] bancasDiputadosPorDistrito;
     private ListaEnlazada mesasRegistradas;
     private ColaPrioridadAcotada dHondt;
 
