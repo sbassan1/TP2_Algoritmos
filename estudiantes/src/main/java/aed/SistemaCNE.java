@@ -49,11 +49,10 @@ public class SistemaCNE {
 
         while(indiceInicio<=indiceFinal){
             medio = (indiceInicio+indiceFinal)/2;
-            i = medio;
-            int rangoMenor = ultimasMesasDistritos[i-1];
-            int rangoMayor = ultimasMesasDistritos[i];
+            int rangoMenor = ultimasMesasDistritos[medio-1];
+            int rangoMayor = ultimasMesasDistritos[medio];
             if (enRango(rangoMenor, rangoMayor, idMesa)){
-                return nombreDistrito(i);
+                i = medio;
             }
             else if (idMesa < ultimasMesasDistritos[medio]){
                 indiceFinal = medio - 1;
