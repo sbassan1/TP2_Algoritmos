@@ -61,7 +61,6 @@ public class SistemaCNE {
                 indiceInicio = medio + 1;
             }
         }
-
         
     }
 
