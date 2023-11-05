@@ -1,0 +1,17 @@
+
+#nombres de partidos, nombres de distritos y diputados en disputa 
+como Arrays ordenados a base de IdPartidos y IdDistritos para sacar con O(1)
+
+#rango de mesas como un avl para buscar el rango con IdMesa en O(log n)
+
+#usar un heap para el D'hont de resultadosDiputados
+
+#Hay que armar por el momento 2 clases de estructuras: AVL y heap.
+
+#Hay que discutir la implementacion de heap para ver si hay elementos repetidos
+(lo charlamos en clase, no recurdo bien porqué)
+
+Usemos en lo posible este block para discutir o poner ideas 
+del tp para dicutir asi no se llena el wpp y es mas facil coordinar.
+
+-Santi
