@@ -23,6 +23,8 @@ public class SistemaCNE {
         this.diputadosPorDistrito = diputadosPorDistrito;
         this.nombresPartidos = nombresPartidos;
         this.ultimasMesasDistritos = ultimasMesasDistritos;
+        votosPresidenciales = new int[nombresPartidos.length];
+        votosDiputadosPorDistrito = new int[nombresDistritos.length][nombresPartidos.length];
     }
 
     public String nombrePartido(int idPartido) {
