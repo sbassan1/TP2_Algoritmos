@@ -8,7 +8,7 @@ public class SistemaCNE {
     private int[][] votosDiputadosPorDistrito;
     private int[][] bancasDiputadosPorDistrito;
     private ListaEnlazada mesasRegistradas;
-    private ColaPrioridadAcotada dHondt;
+    private ColaPrioridadAcotada<Nodo>[] dHondt;
 
     public class VotosPartido{
         private int presidente;
@@ -66,6 +66,17 @@ public class SistemaCNE {
     }
 
     public void registrarMesa(int idMesa, VotosPartido[] actaMesa) {
+        //complejidad: O(P + log(D))
+        
+        //Buscar distrito mesa con distritoDeMesa() --log(D)
+        //Recorrer actaMesa -P
+            //Actualizar votos presidenciales (ir salvando el id del primero y el segundo?)
+            //Actualizar votos diputados (teniendo en cuenta el distrito)
+        //Actualizar variables para calcular el ballotage en O(1)
+        //A partir del array de diputados, generar dHondt para ese distrito (-P Array2Heap)
+            //usar constructor de ColaPrioridadAcotada(array)
+
+
         throw new UnsupportedOperationException("No implementada aun");
     }
 
