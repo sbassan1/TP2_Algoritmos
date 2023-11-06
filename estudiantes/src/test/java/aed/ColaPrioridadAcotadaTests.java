@@ -7,11 +7,20 @@ import org.junit.jupiter.api.Test;
 class ColaPrioridadAcotadaTests {
 
     @Test
-    void nueva_cola() {
+    void constructor_cola_vacia() {
         ColaPrioridadAcotada<Integer> cola = new ColaPrioridadAcotada<Integer>(5);
 
         assertEquals(true, cola.vacia());
     }
+
+    @Test
+    void constructor_desde_arreglo() {
+        Integer[] arreglo = {1,50,2,-5,8};
+        ColaPrioridadAcotada<Integer> cola = new ColaPrioridadAcotada<Integer>(5, arreglo);
+
+        assertEquals(true, cola.llena());
+    }
+
 
     @Test
     void encolar_y_desencolar_uno() throws Exception{
