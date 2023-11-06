@@ -1,5 +1,0 @@
-        //Buscar distrito mesa con distritoDeMesa() --log(D)
-        //Recorrer actaMesa -P
-            //Sumar votos presidenciales
-            //Sumar votos diputados (teniendo en cuenta el distrito)
-        //A partir del array de diputados, generar dHondt para ese distrito (-P Array2Heap)
