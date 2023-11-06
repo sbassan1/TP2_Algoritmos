@@ -46,7 +46,6 @@ public class SistemaCNE {
         int indiceFinal = ultimasMesasDistritos.length-1;
         int medio;
         int i = 0;
-
         int longitud = ultimasMesasDistritos.length;
 
         while(indiceInicio<=indiceFinal && longitud != 1){
