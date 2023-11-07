@@ -1,4 +1,5 @@
-//La complejidad da, pero igual chequar si se puede hacer mas eficientes a los algos.
+//Falta #1: abstraer operaciones, p. ej.: subir y bajar.
+//Falta #2: Revisar algo de Floyd con el teorico y chequear que cumpla la complejidad.
 
 package aed;
 public class ColaPrioridadAcotada<T extends Comparable<T>> {
@@ -6,7 +7,6 @@ public class ColaPrioridadAcotada<T extends Comparable<T>> {
     int indice;
 
     //Escribo el Inv. Rep. refiriendome a tipos de implementacion y no a observadores del TAD
-    //Asi lo puedo usar en asserts
     //Plantear como duda el viernes
     /* Inv. Rep/ (c': ColaPrioridadAcotada<T>) {
         elems.length > 0 && 0 <= indice <= elems.length
@@ -18,10 +18,8 @@ public class ColaPrioridadAcotada<T extends Comparable<T>> {
     }
 
     //Construye una cola nueva a partir de un array usando el algoritmo de Floyd.
-    //Nota respecto de la complejidad: copio el arreglo y despues lo ordeno para no exponer la representacion de la cola.
-    //De todas maneras, el tiempo de ejecucion es: T(n) = N + N --> T(n) = O(n)
     ColaPrioridadAcotada(int capacidad, T[] arreglo) {
-        //requiere: capacidad >= arreglo.length
+        //requiere: capacidad >= arreglo.length && ninguna posicion del arreglo == null
         //complejidad: O(arreglo.length())
         
         elems = (T[]) new Comparable[capacidad];
@@ -32,29 +30,28 @@ public class ColaPrioridadAcotada<T extends Comparable<T>> {
             indice++;
         }
 
-        int ultimoNodoConHijos = (indice-2)/2;
-        int actual = ultimoNodoConHijos;
+        // actual = ultimo nodo con hijos
+        int actual = (indice-2)/2;
 
-        //manejo por separado el ultimoNodoConHijos, porque es el unico que puede tener un solo hijo.
-        if (indice-1 == ultimoNodoConHijos*2 + 1) {
-            //caso 1: tiene un hijo
-            if (elems[ultimoNodoConHijos].compareTo(elems[indice-1]) < 0) {
-                swap(ultimoNodoConHijos, indice-1);
-            }
-        } else {
-            //caso 2: tiene dos hijos
-            int hijoMayor = hijoMayor(ultimoNodoConHijos);
-            if (elems[ultimoNodoConHijos].compareTo(elems[hijoMayor]) < 0) {
-                swap(ultimoNodoConHijos, hijoMayor);
-            }  
-        }
-        actual--;
+        //revisar y abstraer subir y bajar.
 
         while(actual>=0){
             //actual != ultimoNodoConHijos ==> actual tiene dos hijos.
-            int hijoMayor = hijoMayor(actual);
-            if (elems[actual].compareTo(elems[hijoMayor]) < 0) {
-               swap(actual, hijoMayor); 
+            int nodo = actual;
+            while(existeHijoMayor(nodo)) {
+                
+                //caso 1: nodo tiene unicamente un hijo izquierdo.
+                if (indice-1 == nodo*2 + 1) {
+                    swap(nodo, nodo*2 + 1);
+                    nodo = nodo*2 + 1;
+
+                //caso 2: nodo tiene dos hijos.    
+                } else if (indice-1 >= nodo*2 + 2) {
+                    int hijoMayor = hijoMayor(nodo);
+                    swap(nodo, hijoMayor);
+                    nodo = hijoMayor;
+                }
+                
             }
             actual--;
         }

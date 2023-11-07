@@ -1,8 +1,11 @@
+//falta testear: encolarDeMas y DesencolarDeMenos
+//falta testear: mezclar aleatoriamente los elementos del array pasados al constructor.
+
 package aed;
 
 import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
+import java.util.Random;
 
 class ColaPrioridadAcotadaTests {
 
@@ -61,6 +64,27 @@ class ColaPrioridadAcotadaTests {
         assertEquals(true, cola.llena());
         
         for (int i=999;i>-1;i--) {
+            assertEquals(i, cola.desencolar());
+        }
+        
+        assertEquals(true, cola.vacia());
+    }
+
+    int NCLAVES = 10000;
+    @Test
+    void construir_por_array_y_desencolar() throws Exception {
+        
+        Integer[] arreglo = new Integer[NCLAVES];
+        for(int i=0;i<NCLAVES;i++) {
+            arreglo[i] = i;
+        }
+
+        ColaPrioridadAcotada<Integer> cola = new ColaPrioridadAcotada<Integer>(NCLAVES+1, arreglo);
+        assertEquals(false, cola.llena());
+        cola.encolar(NCLAVES);
+        assertEquals(true, cola.llena());
+        
+        for (int i=NCLAVES;i>-1;i--) {
             assertEquals(i, cola.desencolar());
         }
         
