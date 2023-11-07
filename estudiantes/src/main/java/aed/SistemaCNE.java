@@ -52,7 +52,7 @@ public class SistemaCNE {
         bancasDiputadosPorDistrito = new int[nombresDistritos.length][nombresPartidos.length - 1];
         primero = 0;
         segundo = 0;
-        dHondt = new ColaPrioridadAcotada[nombresDistritos.length];
+        dHondt = new ColaPrioridadAcotada[nombresDistritos.length]; //Pensar como inicializar, quizas tad colaprioridad para nodos
     }
 
     public String nombrePartido(int idPartido) {
