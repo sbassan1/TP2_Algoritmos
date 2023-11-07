@@ -9,7 +9,7 @@ public class SistemaCNE {
     private float primero;
     private float segundo;
     private int votosTotales;
-    private ListaEnlazada mesasRegistradas;
+    //private ListaEnlazada mesasRegistradas;
     //private ColaPrioridadAcotada<Nodo>[] dHondt;
 
     public class VotosPartido{
@@ -30,7 +30,15 @@ public class SistemaCNE {
             this.idPartido = idPartido; 
             coeficiente = votosDiputadosPorDistrito[idDistrito][idPartido] ;
         }
-        //armar metodo comparable
+        public int compareTo(Nodo n) {
+            if (coeficiente > n.coeficiente) {
+              return 1;
+            } else if (coeficiente < n.coeficiente) {
+              return -1;
+            } else {
+              return 0;
+            }
+        }
     }
 
     public SistemaCNE(String[] nombresDistritos, int[] diputadosPorDistrito, String[] nombresPartidos, int[] ultimasMesasDistritos) {
