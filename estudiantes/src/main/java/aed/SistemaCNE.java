@@ -7,8 +7,10 @@ public class SistemaCNE {
     private int[] ultimasMesasDistritos;
     private int[][] votosDiputadosPorDistrito;
     private int[][] bancasDiputadosPorDistrito;
-    private ListaEnlazada mesasRegistradas;
-    private ColaPrioridadAcotada<Nodo>[] dHondt; // la clase Nodo no se reconoce dentro del archivo, hay que refereciarla
+    private int primero;
+    private int segundo;
+    //private ListaEnlazada mesasRegistradas;
+    //private ColaPrioridadAcotada<Nodo>[] dHondt;
 
     public class VotosPartido{
         private int presidente;
@@ -24,7 +26,10 @@ public class SistemaCNE {
         this.nombresPartidos = nombresPartidos;
         this.ultimasMesasDistritos = ultimasMesasDistritos;
         votosPresidenciales = new int[nombresPartidos.length];
-        votosDiputadosPorDistrito = new int[nombresDistritos.length][nombresPartidos.length];
+        votosDiputadosPorDistrito = new int[nombresDistristos.length][nombresPartidos.length];
+        this.primero = 0;
+        this.segundo = 0;
+
     }
 
     public String nombrePartido(int idPartido) {
@@ -43,7 +48,8 @@ public class SistemaCNE {
         return (elem >= min && elem < max);    
         
     }
-    public String distritoDeMesa(int idMesa) {
+
+    public int BusquedaBinDistrito(int idMesa){
         int indiceInicio = 0;
         int indiceFinal = ultimasMesasDistritos.length-1;
         int medio;
@@ -52,10 +58,12 @@ public class SistemaCNE {
 
         while(indiceInicio<=indiceFinal && longitud != 1){
             medio = (indiceInicio+indiceFinal)/2;
-            int rangoMenor = ultimasMesasDistritos[medio-1];
-            int rangoMayor = ultimasMesasDistritos[medio];
+            
+            int rangoMenor = ultimasMesasDistritos[medio];
+            int rangoMayor = ultimasMesasDistritos[medio + 1];
             if (enRango(rangoMenor, rangoMayor, idMesa)){
-                i = medio;
+                i = medio + 1;
+                break;
             }
             else if (idMesa < ultimasMesasDistritos[medio]){
                 indiceFinal = medio - 1;
@@ -63,22 +71,36 @@ public class SistemaCNE {
                 indiceInicio = medio + 1;
             }
         }
-        return nombreDistrito(i);
+        return i;
+    }
+
+    public String distritoDeMesa(int idMesa) {
+        return nombreDistrito(BusquedaBinDistrito(idMesa));
     }
 
     public void registrarMesa(int idMesa, VotosPartido[] actaMesa) {
         //complejidad: O(P + log(D))
         
-        //Buscar distrito mesa con distritoDeMesa() --log(D)
+        //Buscar distrito mesa con BusquedaBinDistrito() --log(D)
+        int indexDistrito = BusquedaBinDistrito(idMesa);
+        
         //Recorrer actaMesa -P
-            //Actualizar votos presidenciales (ir salvando el id del primero y el segundo?)
+        for (int i = 0; i <= actaMesa.length; i++){
+            //Actualizar votos presidenciales 
+            this.votosPresidenciales[i] += actaMesa[i].presidente;
             //Actualizar votos diputados (teniendo en cuenta el distrito)
-        //Actualizar variables para calcular el ballotage en O(1)
+            this.votosDiputadosPorDistrito[i][indexDistrito] += actaMesa[i].diputados;
+            //Actualizar variables para calcular el ballotage en O(1)
+            if (actaMesa[i].presidente > this.primero){//pensar logica de los if, creo que esta ok
+                this.primero = actaMesa[i].presidente;
+            } else if (actaMesa[i].presidente > this.segundo){
+                this.segundo = actaMesa[i].presidente;
+            }
+        }   
         //A partir del array de diputados, generar dHondt para ese distrito (-P Array2Heap)
-            //usar constructor de ColaPrioridadAcotada(array)
-
-
-        throw new UnsupportedOperationException("No implementada aun");
+        //usar constructor de ColaPrioridadAcotada(array)
+        
+        
     }
 
     public int votosPresidenciales(int idPartido) {
