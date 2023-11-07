@@ -65,10 +65,10 @@ public class ColaPrioridadAcotada<T extends Comparable<T>> {
         return indice == elems.length;
     }
 
-    public void encolar(T e) throws Exception {
-        if (llena()) {
+    public void encolar(T e) { // throws Exception {
+        /* if (llena()) {
             throw new Exception("Cola de Prioridad Llena.");
-        } else {
+        } else { */
             elems[indice] = e;
             int actual = indice;
             indice++;
@@ -76,14 +76,14 @@ public class ColaPrioridadAcotada<T extends Comparable<T>> {
                 swap((actual - 1)/2, actual);
                 actual = (actual - 1)/2;
             }
-        }
+        // }
         
     }
 
-    public T desencolar() throws Exception {
-        if (vacia()) {
-            throw new Exception("Cola de Prioridad Vacia.");
-        } else {
+    public T desencolar() { //throws Exception {
+        //if (vacia()) {
+            //throw new Exception("Cola de Prioridad Vacia.");
+        //} else {
             T elemento = elems[0];
             elems[0] = elems[indice-1];
             int actual = 0;
@@ -106,7 +106,7 @@ public class ColaPrioridadAcotada<T extends Comparable<T>> {
 
             indice--;
             return elemento;
-        }
+       // }
     }
 
     private void swap(int nodo1, int nodo2) {

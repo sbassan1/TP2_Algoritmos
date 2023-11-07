@@ -6,6 +6,7 @@ public class SistemaCNE {
     private int[] diputadosPorDistrito;
     private int[] ultimasMesasDistritos;
     private int[][] votosDiputadosPorDistrito;
+    private int[][] bancasDiputadosPorDistrito;
     private float primero;
     private float segundo;
     private int votosTotales;
@@ -48,9 +49,10 @@ public class SistemaCNE {
         this.ultimasMesasDistritos = ultimasMesasDistritos;
         votosPresidenciales = new int[nombresPartidos.length];
         votosDiputadosPorDistrito = new int[nombresDistristos.length][nombresPartidos.length];
-        this.primero = 0;
-        this.segundo = 0;
-
+        bancasDiputadosPorDistrito = new int[nombresDistritos.length][nombresPartidos.length - 1];
+        primero = 0;
+        segundo = 0;
+        dHondt = new ColaPrioridadAcotada[nombresDistritos.length];
     }
 
     public String nombrePartido(int idPartido) {
@@ -121,12 +123,28 @@ public class SistemaCNE {
             }
         }   
         
-        //A partir del array de nodos, generar dHondt para ese distrito:
-                // - generar array de nodos
+        
+                //A partir del array de nodos, generar dHondt para ese distrito:
+                // - generar array de nodos10
                 // - pasar array de nodos a heap (-P Array2Heap)
         //usar constructor de ColaPrioridadAcotada(array)
         
-        
+        Nodo[] coeficientes = new Nodo[nombresPartidos.length];
+        for (int i=0; i<coeficientes.length; i++) {
+            Nodo coeficiente = new Nodo(indexDistrito,i);
+            coeficientes[i] = coeficiente;
+        }
+        ColaPrioridadAcotada<Nodo> dHondtDistrito = new ColaPrioridadAcotada<>(coeficientes.length, coeficientes);
+        dHondt[indexDistrito] = dHondtDistrito;
+
+        //agregar mesa a mesas registradas?
+
+
+
+
+
+
+
     }
 
     public int votosPresidenciales(int idPartido) {
@@ -137,11 +155,17 @@ public class SistemaCNE {
         return votosDiputadosPorDistrito[idDistrito][idPartido];
     }
 
-    public int[] resultadosDiputados(int idDistrito){
-        //CREAR ARRAY
-        //WHILE(I<CARGOS): SUMAR BANCAS CON DHONDT
+    public int[] resultadosDiputados(int idDistrito){ //throws Exception{
+        int i = 0; //Son las bancas asignadas
+        //WHILE(I < CANT BANCAS X DISTRITO): SUMAR BANCAS CON DHONDT
+        while (i < diputadosEnDisputa(idDistrito)){
+            Nodo ganador = dHondt[idDistrito].desencolar();
+            bancasDiputadosPorDistrito[idDistrito][ganador.idPartido]++;
+            ganador.coeficiente = ganador.coeficiente/(bancasDiputadosPorDistrito[idDistrito][ganador.idPartido] + 1);
+            dHondt[idDistrito].encolar(ganador); 
+        }
         //DEVOLVER ARRAY
-        throw new UnsupportedOperationException("No implementada aun");
+        return bancasDiputadosPorDistrito[idDistrito];
     }
 
     public boolean hayBallotage(){
