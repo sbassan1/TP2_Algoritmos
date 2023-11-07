@@ -8,7 +8,7 @@ public class SistemaCNE {
     private int[][] votosDiputadosPorDistrito;
     private int[][] bancasDiputadosPorDistrito;
     private ListaEnlazada mesasRegistradas;
-    private ColaPrioridadAcotada<Nodo>[] dHondt;
+    private ColaPrioridadAcotada<Nodo>[] dHondt; // la clase Nodo no se reconoce dentro del archivo, hay que refereciarla
 
     public class VotosPartido{
         private int presidente;
