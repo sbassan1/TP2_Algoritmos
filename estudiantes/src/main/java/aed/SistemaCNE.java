@@ -9,8 +9,8 @@ public class SistemaCNE {
     private float primero;
     private float segundo;
     private int votosTotales;
-    //private ListaEnlazada mesasRegistradas;
-    //private ColaPrioridadAcotada<Nodo>[] dHondt;
+    //private ListaEnlazada mesasRegistradas; CONSULTAR CLASE
+    private ColaPrioridadAcotada<Nodo>[] dHondt;
 
     public class VotosPartido{
         private int presidente;
@@ -23,7 +23,7 @@ public class SistemaCNE {
         public int votosDiputados(){return diputados;}
     }
 
-    public class Nodo{
+    public class Nodo implements Comparable<Nodo>{
         private int idPartido;
         private int coeficiente;
         Nodo(int idDistrito, int idPartido){
