@@ -1,19 +1,24 @@
 package aed;
 public class SistemaCNE {
-    private String[] nombresPartidos;
-    private int[] votosPresidenciales;
-    private String[] nombresDistristos;
-    private int[] diputadosPorDistrito;
-    private int[] ultimasMesasDistritos;
+
+// ATRIBUTOS PRIVADOS /////////////////////////////////////////////////////////////////////////////////////////
+
+    private String[] nombresPartidos; // ordenados a base de los idPartidos
+    private int[] votosPresidenciales; // ordenados a base de los idPartidos
+    private String[] nombresDistristos; // ordenados a base de los idDistritos
+    private int[] diputadosPorDistrito; // ordenados a base de los idDistritos
+    private int[] ultimasMesasDistritos; // ordenados a base de los idDistritos
     private int[][] votosDiputadosPorDistrito; //en la ultima posicion, guarda el total de votos de ese distrito.
-    private int[][] bancasDiputadosPorDistrito;
-    private boolean[] bancasCalculadas;
-    private float votosPrimero;
-    private float votosSegundo;
-    private int primero;
-    private int votosTotalesPresidente;
+    private int[][] bancasDiputadosPorDistrito; // ordenados a base de los idDistritos
+    private boolean[] bancasCalculadas; // da true si todas las bancas estan calculadas por Distrito, ordenados a base de los idDistritos
+    private float votosPrimero; //votos del partido que esta primero en votaciones
+    private float votosSegundo; //votos del partido que esta segundo en votaciones
+    private int primero; // idPartido del partido que está en primer lugar
+    private int votosTotalesPresidente; // suma total de votos presidenciales
     //private ListaEnlazada mesasRegistradas; CONSULTAR CLASE
-    private ColaPrioridadAcotada[] dHondt;
+    private ColaPrioridadAcotada[] dHondt; // arbol heap para hacer matriz de h'hont
+
+// CLASES /////////////////////////////////////////////////////////////////////////////////////////
 
     public class VotosPartido{
         private int presidente;
@@ -26,7 +31,7 @@ public class SistemaCNE {
         public int votosDiputados(){return diputados;}
     }
 
-    public class Nodo implements Comparable<Nodo>{
+    private class Nodo implements Comparable<Nodo>{ // Esta clase la creamos nosotros, se utiliza para la D'hondt
         private int idPartido;
         private int coeficiente;
         Nodo(int idDistrito, int idPartido){
@@ -44,7 +49,9 @@ public class SistemaCNE {
         }
     }
 
-    public SistemaCNE(String[] nombresDistritos, int[] diputadosPorDistrito, String[] nombresPartidos, int[] ultimasMesasDistritos) {
+// FUNCIONES DEL ENUNCIADO /////////////////////////////////////////////////////////////////////////////////////////
+
+    public SistemaCNE(String[] nombresDistritos, int[] diputadosPorDistrito, String[] nombresPartidos, int[] ultimasMesasDistritos) { // funcion contructora
         this.nombresDistristos = nombresDistritos;
         this.diputadosPorDistrito = diputadosPorDistrito;
         this.nombresPartidos = nombresPartidos;
@@ -71,44 +78,12 @@ public class SistemaCNE {
         return diputadosPorDistrito[idDistrito];
     }
 
-    public Boolean enRango(int min, int max, int elem){
-        return (elem >= min && elem < max);    
-        
-    }
-
-    public int BusquedaBinDistrito(int idMesa){
-        int indiceInicio = 0;
-        int indiceFinal = ultimasMesasDistritos.length-1;
-        int medio;
-        int i = 0;
-        int longitud = ultimasMesasDistritos.length;
-
-        while(indiceInicio<=indiceFinal && longitud != 1){
-            medio = (indiceInicio+indiceFinal)/2;
-            
-            int rangoMenor = ultimasMesasDistritos[medio];
-            int rangoMayor = ultimasMesasDistritos[medio + 1];
-            if (enRango(rangoMenor, rangoMayor, idMesa)){
-                i = medio + 1;
-                break;
-            }
-            else if (idMesa < ultimasMesasDistritos[medio]){
-                indiceFinal = medio - 1;
-            } else {
-                indiceInicio = medio + 1;
-            }
-        }
-        return i;
-    }
-
     public String distritoDeMesa(int idMesa) {
         return nombreDistrito(BusquedaBinDistrito(idMesa));
     }
 
-    //VOLVER A CALCULAR COMPLEJIDAD CUANDO SE PASEN LOS TESTS
     public void registrarMesa(int idMesa, VotosPartido[] actaMesa) {
         //complejidad: CALCULAR
-
         int indexDistrito = BusquedaBinDistrito(idMesa);
         
         //Recorrer actaMesa -P
@@ -161,7 +136,7 @@ public class SistemaCNE {
     public int[] resultadosDiputados(int idDistrito){ //throws Exception{
         if (!bancasCalculadas[idDistrito]) {
             int i = 0; //Son las bancas asignadas
-            //WHILE(I < CANT BANCAS X DISTRITO): SUMAR BANCAS CON DHONDT
+
             while (i < diputadosEnDisputa(idDistrito)){
                 Nodo ganador = (Nodo) dHondt[idDistrito].maximo();
                 bancasDiputadosPorDistrito[idDistrito][ganador.idPartido]++;
@@ -172,7 +147,6 @@ public class SistemaCNE {
             bancasCalculadas[idDistrito] = true;
         }
         
-        //DEVOLVER ARRAY
         return bancasDiputadosPorDistrito[idDistrito];
     }
 
@@ -188,7 +162,39 @@ public class SistemaCNE {
         return res;
     }
 
-    private boolean superaElUmbral(int idDistrito, int idPartido) {
+// FUNCIONES AUXILIARES /////////////////////////////////////////////////////////////////////////////////////////
+
+    private Boolean enRango(int min, int max, int elem){ // funcion generica para verificar si un numero esta entre un rango de numeros
+        return (elem >= min && elem < max);    
+        
+    }
+
+    private int BusquedaBinDistrito(int idMesa){ // busca el distrito a base del idMesa
+        int indiceInicio = 0;
+        int indiceFinal = ultimasMesasDistritos.length-1;
+        int medio;
+        int i = 0;
+        int longitud = ultimasMesasDistritos.length;
+
+        while(indiceInicio<=indiceFinal && longitud != 1){
+            medio = (indiceInicio+indiceFinal)/2;
+            
+            int rangoMenor = ultimasMesasDistritos[medio];
+            int rangoMayor = ultimasMesasDistritos[medio + 1];
+            if (enRango(rangoMenor, rangoMayor, idMesa)){
+                i = medio + 1;
+                break;
+            }
+            else if (idMesa < ultimasMesasDistritos[medio]){
+                indiceFinal = medio - 1;
+            } else {
+                indiceInicio = medio + 1;
+            }
+        }
+        return i;
+    }
+
+    private boolean superaElUmbral(int idDistrito, int idPartido) { 
         return votosDiputadosPorDistrito[idDistrito][idPartido]*100/votosDiputadosPorDistrito[idDistrito][votosDiputadosPorDistrito[idDistrito].length-1] >= 3;
     }
 }
