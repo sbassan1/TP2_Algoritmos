@@ -109,6 +109,31 @@ public class ColaPrioridadAcotada<T extends Comparable<T>> {
        // }
     }
 
+    public T maximo() {
+        return elems[0];
+    }
+
+    public void modificarMaximo(T elem) {
+        elems[0] = elem;
+        int nodo = 0;
+            while(existeHijoMayor(nodo)) {
+                
+                //caso 1: nodo tiene unicamente un hijo izquierdo.
+                if (indice-1 == nodo*2 + 1) {
+                    swap(nodo, nodo*2 + 1);
+                    nodo = nodo*2 + 1;
+
+                //caso 2: nodo tiene dos hijos.    
+                } else if (indice-1 >= nodo*2 + 2) {
+                    int hijoMayor = hijoMayor(nodo);
+                    swap(nodo, hijoMayor);
+                    nodo = hijoMayor;
+                }
+                
+            }
+
+    }
+
     private void swap(int nodo1, int nodo2) {
         //requiere: nodo 1 y nodo 2 <= indice
         T temp = elems[nodo1];
