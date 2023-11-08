@@ -11,7 +11,7 @@ public class SistemaCNE {
     private float segundo;
     private int votosTotales;
     //private ListaEnlazada mesasRegistradas; CONSULTAR CLASE
-    private ColaPrioridadAcotada<Nodo>[] dHondt;
+    private ColaPrioridadAcotada[] dHondt;
 
     public class VotosPartido{
         private int presidente;
@@ -129,7 +129,7 @@ public class SistemaCNE {
                 // - pasar array de nodos a heap (-P Array2Heap)
         //usar constructor de ColaPrioridadAcotada(array)
         
-        Nodo[] coeficientes = new Nodo[nombresPartidos.length];
+        Nodo[] coeficientes = new Nodo[nombresPartidos.length-1];
         for (int i=0; i<coeficientes.length; i++) {
             Nodo coeficiente = new Nodo(indexDistrito,i);
             coeficientes[i] = coeficiente;
@@ -159,10 +159,11 @@ public class SistemaCNE {
         int i = 0; //Son las bancas asignadas
         //WHILE(I < CANT BANCAS X DISTRITO): SUMAR BANCAS CON DHONDT
         while (i < diputadosEnDisputa(idDistrito)){
-            Nodo ganador = dHondt[idDistrito].desencolar();
+            Nodo ganador = (Nodo) dHondt[idDistrito].desencolar();
             bancasDiputadosPorDistrito[idDistrito][ganador.idPartido]++;
             ganador.coeficiente = ganador.coeficiente/(bancasDiputadosPorDistrito[idDistrito][ganador.idPartido] + 1);
-            dHondt[idDistrito].encolar(ganador); 
+            dHondt[idDistrito].encolar(ganador);
+            i++; 
         }
         //DEVOLVER ARRAY
         return bancasDiputadosPorDistrito[idDistrito];
@@ -174,7 +175,7 @@ public class SistemaCNE {
         boolean res = true;
         if(porcPrimero >= 45){
             res = false;
-        } else if (porcPrimero >= 40 && (porcPrimero - porcSegundo) <= 10){
+        } else if (porcPrimero >= 40 && (porcPrimero - porcSegundo) > 10){
             res = false;
         }
         return res;
