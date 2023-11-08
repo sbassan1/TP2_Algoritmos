@@ -163,10 +163,10 @@ public class SistemaCNE {
             int i = 0; //Son las bancas asignadas
             //WHILE(I < CANT BANCAS X DISTRITO): SUMAR BANCAS CON DHONDT
             while (i < diputadosEnDisputa(idDistrito)){
-                Nodo ganador = (Nodo) dHondt[idDistrito].desencolar();
+                Nodo ganador = (Nodo) dHondt[idDistrito].maximo();
                 bancasDiputadosPorDistrito[idDistrito][ganador.idPartido]++;
                 ganador.coeficiente = votosDiputadosPorDistrito[idDistrito][ganador.idPartido]/(bancasDiputadosPorDistrito[idDistrito][ganador.idPartido] + 1);
-                dHondt[idDistrito].encolar(ganador);
+                dHondt[idDistrito].modificarMaximo(ganador);;
                 i++; 
             }
             bancasCalculadas[idDistrito] = true;
