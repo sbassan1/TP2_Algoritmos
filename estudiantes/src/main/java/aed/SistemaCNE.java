@@ -5,11 +5,12 @@ public class SistemaCNE {
     private String[] nombresDistristos;
     private int[] diputadosPorDistrito;
     private int[] ultimasMesasDistritos;
-    private int[][] votosDiputadosPorDistrito;
+    private int[][] votosDiputadosPorDistrito; //en la ultima posicion, guarda el total de votos de ese distrito.
     private int[][] bancasDiputadosPorDistrito;
+    private boolean[] bancasCalculadas;
     private float primero;
     private float segundo;
-    private int votosTotales;
+    private int votosTotalesPresidente;
     //private ListaEnlazada mesasRegistradas; CONSULTAR CLASE
     private ColaPrioridadAcotada[] dHondt;
 
@@ -29,7 +30,7 @@ public class SistemaCNE {
         private int coeficiente;
         Nodo(int idDistrito, int idPartido){
             this.idPartido = idPartido; 
-            coeficiente = votosDiputadosPorDistrito[idDistrito][idPartido] ;
+            coeficiente = (superaElUmbral(idDistrito, idPartido)) ? votosDiputadosPorDistrito[idDistrito][idPartido] : 0 ;
         }
         public int compareTo(Nodo n) {
             if (coeficiente > n.coeficiente) {
@@ -48,8 +49,9 @@ public class SistemaCNE {
         this.nombresPartidos = nombresPartidos;
         this.ultimasMesasDistritos = ultimasMesasDistritos;
         votosPresidenciales = new int[nombresPartidos.length];
-        votosDiputadosPorDistrito = new int[nombresDistristos.length][nombresPartidos.length];
+        votosDiputadosPorDistrito = new int[nombresDistristos.length][nombresPartidos.length + 1];
         bancasDiputadosPorDistrito = new int[nombresDistritos.length][nombresPartidos.length - 1];
+        bancasCalculadas = new boolean[nombresDistritos.length];
         primero = 0;
         segundo = 0;
         dHondt = new ColaPrioridadAcotada[nombresDistritos.length]; //Pensar como inicializar, quizas tad colaprioridad para nodos
@@ -101,19 +103,21 @@ public class SistemaCNE {
         return nombreDistrito(BusquedaBinDistrito(idMesa));
     }
 
+    //VOLVER A CALCULAR COMPLEJIDAD CUANDO SE PASEN LOS TESTS
     public void registrarMesa(int idMesa, VotosPartido[] actaMesa) {
-        //complejidad: O(P + log(D))
-        //new array de longitud partidos
-        //Buscar distrito mesa con BusquedaBinDistrito() --log(D)
+        //complejidad: CALCULAR
+
         int indexDistrito = BusquedaBinDistrito(idMesa);
         
         //Recorrer actaMesa -P
         for (int i = 0; i < actaMesa.length; i++){
-            //Actualizar votos presidenciales 
+            //Actualizar votos presidenciales (para el partido y totales)
             votosPresidenciales[i] += actaMesa[i].presidente;
-            //Actualizar votos diputados (teniendo en cuenta el distrito)
+            votosTotalesPresidente += actaMesa[i].presidente;
+            //Actualizar votos diputados (para el partido y totales)
             votosDiputadosPorDistrito[indexDistrito][i] += actaMesa[i].diputados;
-            votosTotales += actaMesa[i].presidente;
+            votosDiputadosPorDistrito[indexDistrito][votosDiputadosPorDistrito[indexDistrito].length-1] += actaMesa[i].diputados;
+
             //Actualizar variables para calcular el ballotage en O(1)
             // array [i] =
             if (votosPresidenciales[i] > primero){//pensar logica de los if, creo que esta ok
@@ -123,12 +127,9 @@ public class SistemaCNE {
             }
         }   
         
+        //Prepara resultadosDiputados()
         
-                //A partir del array de nodos, generar dHondt para ese distrito:
-                // - generar array de nodos10
-                // - pasar array de nodos a heap (-P Array2Heap)
-        //usar constructor de ColaPrioridadAcotada(array)
-        
+        //1.- Genera dHondt para el distrito.        
         Nodo[] coeficientes = new Nodo[nombresPartidos.length-1];
         for (int i=0; i<coeficientes.length; i++) {
             Nodo coeficiente = new Nodo(indexDistrito,i);
@@ -137,7 +138,11 @@ public class SistemaCNE {
         ColaPrioridadAcotada<Nodo> dHondtDistrito = new ColaPrioridadAcotada<>(coeficientes.length, coeficientes);
         dHondt[indexDistrito] = dHondtDistrito;
 
-        //agregar mesa a mesas registradas?
+        //2.- Marca la asignacion de bancas como no calculada.
+
+        bancasCalculadas[indexDistrito] = false;
+
+        //DUDA: Es necesario agregar mesa a mesas registradas?
 
 
 
@@ -156,22 +161,26 @@ public class SistemaCNE {
     }
 
     public int[] resultadosDiputados(int idDistrito){ //throws Exception{
-        int i = 0; //Son las bancas asignadas
-        //WHILE(I < CANT BANCAS X DISTRITO): SUMAR BANCAS CON DHONDT
-        while (i < diputadosEnDisputa(idDistrito)){
-            Nodo ganador = (Nodo) dHondt[idDistrito].desencolar();
-            bancasDiputadosPorDistrito[idDistrito][ganador.idPartido]++;
-            ganador.coeficiente = ganador.coeficiente/(bancasDiputadosPorDistrito[idDistrito][ganador.idPartido] + 1);
-            dHondt[idDistrito].encolar(ganador);
-            i++; 
+        if (!bancasCalculadas[idDistrito]) {
+            int i = 0; //Son las bancas asignadas
+            //WHILE(I < CANT BANCAS X DISTRITO): SUMAR BANCAS CON DHONDT
+            while (i < diputadosEnDisputa(idDistrito)){
+                Nodo ganador = (Nodo) dHondt[idDistrito].desencolar();
+                bancasDiputadosPorDistrito[idDistrito][ganador.idPartido]++;
+                ganador.coeficiente = votosDiputadosPorDistrito[idDistrito][ganador.idPartido]/(bancasDiputadosPorDistrito[idDistrito][ganador.idPartido] + 1);
+                dHondt[idDistrito].encolar(ganador);
+                i++; 
+            }
+            bancasCalculadas[idDistrito] = true;
         }
+        
         //DEVOLVER ARRAY
         return bancasDiputadosPorDistrito[idDistrito];
     }
 
     public boolean hayBallotage(){
-        float porcPrimero = (primero/votosTotales)*100;
-        float porcSegundo = (segundo/votosTotales)*100;
+        float porcPrimero = (primero/votosTotalesPresidente)*100;
+        float porcSegundo = (segundo/votosTotalesPresidente)*100;
         boolean res = true;
         if(porcPrimero >= 45){
             res = false;
@@ -179,6 +188,10 @@ public class SistemaCNE {
             res = false;
         }
         return res;
+    }
+
+    private boolean superaElUmbral(int idDistrito, int idPartido) {
+        return votosDiputadosPorDistrito[idDistrito][idPartido]*100/votosDiputadosPorDistrito[idDistrito][votosDiputadosPorDistrito[idDistrito].length-1] >= 3;
     }
 }
 
