@@ -8,8 +8,9 @@ public class SistemaCNE {
     private int[][] votosDiputadosPorDistrito; //en la ultima posicion, guarda el total de votos de ese distrito.
     private int[][] bancasDiputadosPorDistrito;
     private boolean[] bancasCalculadas;
-    private float primero;
-    private float segundo;
+    private float votosPrimero;
+    private float votosSegundo;
+    private int primero;
     private int votosTotalesPresidente;
     //private ListaEnlazada mesasRegistradas; CONSULTAR CLASE
     private ColaPrioridadAcotada[] dHondt;
@@ -52,8 +53,9 @@ public class SistemaCNE {
         votosDiputadosPorDistrito = new int[nombresDistristos.length][nombresPartidos.length + 1];
         bancasDiputadosPorDistrito = new int[nombresDistritos.length][nombresPartidos.length - 1];
         bancasCalculadas = new boolean[nombresDistritos.length];
+        votosPrimero = 0;
+        votosSegundo = 0;
         primero = 0;
-        segundo = 0;
         dHondt = new ColaPrioridadAcotada[nombresDistritos.length]; //Pensar como inicializar, quizas tad colaprioridad para nodos
     }
 
@@ -119,11 +121,14 @@ public class SistemaCNE {
             votosDiputadosPorDistrito[indexDistrito][votosDiputadosPorDistrito[indexDistrito].length-1] += actaMesa[i].diputados;
 
             //Actualizar variables para calcular el ballotage en O(1)
-            // array [i] =
-            if (votosPresidenciales[i] > primero){//pensar logica de los if, creo que esta ok
-                primero = votosPresidenciales[i];
-            } else if (votosPresidenciales[i] > segundo){
-                segundo = votosPresidenciales[i];
+            if (votosPresidenciales[i] >= votosPrimero && i == primero){
+                votosPrimero = votosPresidenciales[i];
+            } else if (votosPresidenciales[i] >= votosPrimero && i != primero){
+                votosSegundo = votosPrimero;
+                primero = i;
+                votosPrimero = votosPresidenciales[i];
+            } else if (votosPresidenciales[i] < votosPrimero && votosPresidenciales[i] > votosSegundo) {
+                votosSegundo = votosPresidenciales[i];
             }
         }   
         
@@ -143,13 +148,6 @@ public class SistemaCNE {
         bancasCalculadas[indexDistrito] = false;
 
         //DUDA: Es necesario agregar mesa a mesas registradas?
-
-
-
-
-
-
-
     }
 
     public int votosPresidenciales(int idPartido) {
@@ -179,8 +177,8 @@ public class SistemaCNE {
     }
 
     public boolean hayBallotage(){
-        float porcPrimero = (primero/votosTotalesPresidente)*100;
-        float porcSegundo = (segundo/votosTotalesPresidente)*100;
+        float porcPrimero = (votosPrimero/votosTotalesPresidente)*100;
+        float porcSegundo = (votosSegundo/votosTotalesPresidente)*100;
         boolean res = true;
         if(porcPrimero >= 45){
             res = false;
