@@ -16,23 +16,22 @@ public class SistemaCNE {
     private int primero; // idPartido del partido que está en primer lugar
     private int votosTotalesPresidente; // suma total de votos presidenciales
     //private ListaEnlazada mesasRegistradas; CONSULTAR CLASE
-    private ColaPrioridadAcotada[] dHondt; // arbol heap para hacer matriz de h'hont
+    private ColaPrioridadAcotada[] dHondt; // arbol heap para hacer matriz de h'hont [][]
 
     /*
     Inv. Rep/(c': SistemaCNE){ // La comence a la noche pero esta sin terminar --Santi
-        nombresPartidos.lenght > 0 &&
-        nombresDistristos.lenght > 0 &&
-        votosPresidenciales.lenght == nombresPartidos.lenght &&
-        diputadosPorDistrito.lenght == nombresDistristos.lenght &&
-        ultimasMesasDistritos.lenght == nombresDistristos.lenght &&
-        votosDiputadosPorDistrito.lenght == nombresDistristos.lenght &&
-        bancasDiputadosPorDistrito.lenght == nombresDistristos.lenght &&
+        nombresPartidos.length > 0 &&
+        nombresDistristos.length > 0 &&
+        votosPresidenciales.length == nombresPartidos.length &&
+        diputadosPorDistrito.length == nombresDistristos.length &&
+        ultimasMesasDistritos.length == nombresDistristos.length &&
+        votosDiputadosPorDistrito.length == nombresDistristos.length &&
+        bancasDiputadosPorDistrito.length == nombresDistristos.length &&
+        bancasCalculadas == nombresDistristos.length && votosTotalesPresidente > 0 &&
+        0 <= votosPrimero <= votosTotalesPresidente && 0 <= votosSegundo <= votosPrimero &&
+        0 <= primero < nombresPartidos.length && dHondt.length
 
-
-        votosTotalesPresidente == sum
-
-
-
+        forall i : int :: 0 <= i < |dHondt| ==>
     } 
  */
 // CLASES /////////////////////////////////////////////////////////////////////////////////////////

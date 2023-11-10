@@ -6,6 +6,7 @@ public class ColaPrioridadAcotada<T extends Comparable<T>> {
     T[] elems;
     int indice;
 
+
 // INVARIANTE DE REPRESENTACION ///////////////////////////////////////////////////////////////////////////////
 
     //Escrito en lenguaje formal.
