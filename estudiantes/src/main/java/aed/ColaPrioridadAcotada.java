@@ -10,10 +10,10 @@ public class ColaPrioridadAcotada<T extends Comparable<T>> {
 // INVARIANTE DE REPRESENTACION ///////////////////////////////////////////////////////////////////////////////
 
     //Escrito en lenguaje formal.
-    /*Inv. Rep/ (c': ColaPrioridadAcotada<T>) {
-        elems.length > 0 && 0 <= indice <= elems.length && 
-        forall i:int :: 0 <= i < indice ==>L elems[i] != null &&
-        forall i,j:int :: 0 <= i,j < indice && (j = i*2 + 1 || j = i*2 + 2) ==>L elems[i] >= elems[j]
+    /*Inv. Rep/ (c: ColaPrioridadAcotada<T>) {
+        c.elems.length > 0 && 0 <= c.indice <= c.elems.length && 
+        forall i:int :: 0 <= i < c.indice ==>L c.elems[i] != null &&
+        forall i,j:int :: 0 <= i,j < c.indice && (j = i*2 + 1 || j = i*2 + 2) ==>L c.elems[i] >= c.elems[j]
     }
 
     ### Comentario:
@@ -31,7 +31,7 @@ public class ColaPrioridadAcotada<T extends Comparable<T>> {
 
     ColaPrioridadAcotada(int capacidad) {
         //complejidad: O(capacidad)
-        elems = (T[]) new Comparable[capacidad]; // <-- op.may.costo Java crea e inicializa el array en O(n)
+        elems = (T[]) new Comparable[capacidad]; // Java crea e inicializa el array en O(n)
         indice = 0;
     }
 
@@ -39,9 +39,8 @@ public class ColaPrioridadAcotada<T extends Comparable<T>> {
     ColaPrioridadAcotada(int capacidad, T[] arreglo) {
         //requiere: capacidad >= arreglo.length && ninguna posicion del arreglo == null
         /*complejidad: O(capacidad)
-        * La complejidad surge de aplicar la regla de la suma a la complejidad de las operaciones más
-        * costosas: creacion de array (L48), copia de array (L51) y algoritmo de Floyd (L64). 
-        * max(capacidad, arreglo.length) = capacidad, por requiere de la funcion.
+        * El tiempo de ejecucion aproximado es T(capacidad,arreglo.length) = capacidad + 2*arreglo.length pero,
+        * como capacidad >= arreglo.length (por requiere), T() < 3*capacidad ==> T = O(capacidad).
         */
         
         elems = (T[]) new Comparable[capacidad]; //O(capacidad)

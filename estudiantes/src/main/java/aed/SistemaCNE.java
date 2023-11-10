@@ -46,7 +46,7 @@ public class SistemaCNE {
         0 <= c.primero < c.nombresPartidos.length && 
         
         c.dHondt.length == c.nombresDistristos.length &&
-        forall i : int :: 0 <= i < |c.dHondt| && c.dHondt[i] != null ==>L c.dHondt.indice == c.nombresDePartidos.length &&
+        forall i : int :: 0 <= i < c.dHondt.lenght && c.dHondt[i] != null ==>L c.dHondt.indice == c.nombresDePartidos.length &&
         forall n : Nodo :: esNodoDe(n, c.dHondt[i]) ==>L (n.coeficiente == c.cantDeVotosDiputados[i][n.idPartido] || c.bancasCalculadas[i] == true )
     }
 
@@ -54,6 +54,7 @@ public class SistemaCNE {
             // n es nodo de dHondt
         }
  */
+
 // CLASES /////////////////////////////////////////////////////////////////////////////////////////
 
     public class VotosPartido{
@@ -100,14 +101,14 @@ public class SistemaCNE {
 
     public SistemaCNE(String[] nombresDistritos, int[] diputadosPorDistrito, String[] nombresPartidos, int[] ultimasMesasDistritos) { // funcion contructora
         // Complejidad: O(n) Debido a que todas las complejidades se suman y queda la complejidad maxima
-        this.nombresDistristos = nombresDistritos;  //O(1) Debido a que no creams el array sino que como los array se pasan por referencia, asignamos un puntero
-        this.diputadosPorDistrito = diputadosPorDistrito; //O(1)
-        this.nombresPartidos = nombresPartidos; //O(1)
-        this.ultimasMesasDistritos = ultimasMesasDistritos; //O(1)
-        votosPresidenciales = new int[nombresPartidos.length]; //O(P) Debido a que Java crea e inicializa el array en O(n)
+        this.nombresDistristos = nombresDistritos.clone();  // O(D). Usamos .clone() para simplificar el codigo, asumimos que la complejidad no puede ser peor a copiar el array con un ciclo = O(n). 
+        this.diputadosPorDistrito = diputadosPorDistrito.clone(); // O(D)
+        this.nombresPartidos = nombresPartidos.clone(); // O(P)
+        this.ultimasMesasDistritos = ultimasMesasDistritos.clone(); // O(D)
+        votosPresidenciales = new int[nombresPartidos.length]; // O(P) Debido a que Java crea e inicializa el array en O(n)
         votosDiputadosPorDistrito = new int[nombresDistristos.length][nombresPartidos.length + 1]; // O(D * P) Debido a que java inicializa una Matriz (Lista de listas) en O(n * m)
         bancasDiputadosPorDistrito = new int[nombresDistritos.length][nombresPartidos.length - 1]; // O(D * P)
-        bancasCalculadas = new boolean[nombresDistritos.length];  //O(D) 
+        bancasCalculadas = new boolean[nombresDistritos.length];  // O(D) 
         votosPrimero = 0; // O(1)
         votosSegundo = 0; // O(1)
         primero = 0; // O(1)
