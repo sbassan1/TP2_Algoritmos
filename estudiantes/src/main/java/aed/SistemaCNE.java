@@ -31,13 +31,16 @@ public class SistemaCNE {
         public int votosDiputados(){return diputados;}
     }
 
+    //NO OLVIDAR EL INVARIANTE DE REPRESENTACION Y LA COMPLEJIDAD DE ESTA CLASE
     private class Nodo implements Comparable<Nodo>{ // Esta clase la creamos nosotros, se utiliza para la D'hondt
         private int idPartido;
         private int coeficiente;
+        
         Nodo(int idDistrito, int idPartido){
             this.idPartido = idPartido; 
             coeficiente = (superaElUmbral(idDistrito, idPartido)) ? votosDiputadosPorDistrito[idDistrito][idPartido] : 0 ;
         }
+        
         public int compareTo(Nodo n) {
             if (coeficiente > n.coeficiente) {
               return 1;
@@ -63,7 +66,7 @@ public class SistemaCNE {
         votosPrimero = 0;
         votosSegundo = 0;
         primero = 0;
-        dHondt = new ColaPrioridadAcotada[nombresDistritos.length]; //Pensar como inicializar, quizas tad colaprioridad para nodos
+        dHondt = new ColaPrioridadAcotada[nombresDistritos.length];
     }
 
     public String nombrePartido(int idPartido) {
@@ -141,7 +144,7 @@ public class SistemaCNE {
                 Nodo ganador = (Nodo) dHondt[idDistrito].maximo();
                 bancasDiputadosPorDistrito[idDistrito][ganador.idPartido]++;
                 ganador.coeficiente = votosDiputadosPorDistrito[idDistrito][ganador.idPartido]/(bancasDiputadosPorDistrito[idDistrito][ganador.idPartido] + 1);
-                dHondt[idDistrito].modificarMaximo(ganador);;
+                dHondt[idDistrito].modificarMaximo(ganador);
                 i++; 
             }
             bancasCalculadas[idDistrito] = true;

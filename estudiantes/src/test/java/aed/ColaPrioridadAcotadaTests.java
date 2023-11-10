@@ -1,11 +1,7 @@
-//falta testear: encolarDeMas y DesencolarDeMenos
-//falta testear: mezclar aleatoriamente los elementos del array pasados al constructor.
-
 package aed;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
-import java.util.Random;
 
 class ColaPrioridadAcotadaTests {
 
