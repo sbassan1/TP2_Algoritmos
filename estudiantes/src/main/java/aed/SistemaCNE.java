@@ -15,30 +15,44 @@ public class SistemaCNE {
     private float votosSegundo; //votos del partido que esta segundo en votaciones
     private int primero; // idPartido del partido que está en primer lugar
     private int votosTotalesPresidente; // suma total de votos presidenciales
-    //private ListaEnlazada mesasRegistradas; CONSULTAR CLASE
     private ColaPrioridadAcotada[] dHondt; // arbol heap para hacer matriz de d'hont [][]
 
     /*
-    Inv. Rep/(c': SistemaCNE){ // La comence a la noche pero esta sin terminar --Santi
-        nombresPartidos.length > 0 &&
-        nombresDistristos.length > 0 &&
-        votosPresidenciales.length == nombresPartidos.length &&
-        diputadosPorDistrito.length == nombresDistristos.length &&
-        ultimasMesasDistritos.length == nombresDistristos.length &&
-        votosDiputadosPorDistrito.length == nombresDistristos.length &&
+    Inv. Rep/(c: SistemaCNE){
+        c.nombresPartidos.length > 0 &&
+        c.nombresDistristos.length > 0 &&
 
-        (forall i:int :: 0 <= i < votosDiputadosPorDistrito.length  ==>L votosDiputadosPorDistrito[i].lenght ==  nombresPartidos.length + 1 &&
+        c.votosPresidenciales.length == c.nombresPartidos.length &&
+        (forall i : int :: 0 <= i < c.votosPresidenciales.length ==>L c.votosPresidenciales[i] >= 0) &&
+        
+        c.diputadosPorDistrito.length == c.nombresDistristos.length &&
+        (forall i : int :: 0 <= i < c.diputadosPorDistrito.length ==>L c.diputadosPorDistrito[i] >= 0) &&
+        
+        c.ultimasMesasDistritos.length == c.nombresDistristos.length &&
+        (forall i : int :: 0 <= i < c.ultimasMesasDistritos.length - 1 ==>L c.ultimasMesasDistritos[i] > 0 && c.ultimasMesasDistritos[i] < c.ultimasMesasDistritos[i+1]) &&
+        
+        c.votosDiputadosPorDistrito.length == c.nombresDistristos.length &&
+        (forall i:int :: 0 <= i < c.votosDiputadosPorDistrito.length  ==>L c.votosDiputadosPorDistrito[i].lenght ==  c.nombresPartidos.length + 1 &&
         votosDiputadosPorDistrito[i] > 0) &&
 
-        bancasDiputadosPorDistrito.length == nombresDistristos.length &&
-        (forall i:int :: 0 <= i < bancasDiputadosPorDistrito.length  ==>L bancasDiputadosPorDistrito[i].lenght ==  nombresPartidos.length - 1 && 
-        bancasDiputadosPorDistrito[i] > 0) &&
-        bancasCalculadas == nombresDistristos.length && votosTotalesPresidente >= 0 && (votTotal <= ((sumatoria de votos) -> for blah blah blah))
-        0 <= votosPrimero <= votosTotalesPresidente && 0 <= votosSegundo <= votosPrimero &&
-        0 <= primero < nombresPartidos.length && dHondt.length == nombresDistristos.length &&
+        c.bancasDiputadosPorDistrito.length == c.nombresDistristos.length &&
+        (forall i:int :: 0 <= i < c.bancasDiputadosPorDistrito.length  ==>L c.bancasDiputadosPorDistrito[i].lenght ==  c.nombresPartidos.length - 1 && 
+        c.bancasDiputadosPorDistrito[i] > 0) &&
+        
+        c.bancasCalculadas == c.nombresDistristos.length && c.votosTotalesPresidente >= 0 &&
+        (c.votosTotalesPresidente == sum i : int :: 0 <= i < c.votosPresidenciales.lenght :: c.votosPresidenciales[i])) &&
 
-        forall i : int :: 0 <= i < |dHondt| ==>
-    } 
+        0 <= c.votosPrimero <= c.votosTotalesPresidente && 0 <= c.votosSegundo <= c.votosPrimero &&
+        0 <= c.primero < c.nombresPartidos.length && 
+        
+        c.dHondt.length == c.nombresDistristos.length &&
+        forall i : int :: 0 <= i < |c.dHondt| && c.dHondt[i] != null ==>L c.dHondt.indice == c.nombresDePartidos.length &&
+        forall n : Nodo :: esNodoDe(n, c.dHondt[i]) ==>L (n.coeficiente == c.cantDeVotosDiputados[i][n.idPartido] || c.bancasCalculadas[i] == true )
+    }
+
+    pred esNodoDe(n: Nodo, dHondt: DHondt){
+            // n es nodo de dHondt
+        }
  */
 // CLASES /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -59,8 +73,9 @@ public class SistemaCNE {
         
         /*
         Inv. Rep/(n: Nodo){
-
-        }
+        0 <= n.idPartido < SistemaCNE.nombresPartidos.lenght &&
+        (forall i : int :: 0 <= i < SistemaCNE.cantDeVotosDiputados.lenght ==>L
+         n.coeficiente == SistemaCNE.cantDeVotosDiputados[i][n.idPartido] || SistemaCNE.bancasCalculadas[i] == true)
         */ 
         
         Nodo(int idDistrito, int idPartido){
