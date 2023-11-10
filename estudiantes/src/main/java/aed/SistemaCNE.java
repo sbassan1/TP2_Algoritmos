@@ -8,7 +8,7 @@ public class SistemaCNE {
     private String[] nombresDistristos; // ordenados a base de los idDistritos
     private int[] diputadosPorDistrito; // ordenados a base de los idDistritos
     private int[] ultimasMesasDistritos; // ordenados a base de los idDistritos
-    private int[][] votosDiputadosPorDistrito; //en la ultima posicion, guarda el total de votos de ese distrito.
+    private int[][] votosDiputadosPorDistrito; // en la ultima posicion de cada fila guarda el total de votos de ese distrito.
     private int[][] bancasDiputadosPorDistrito; // ordenados a base de los idDistritos
     private boolean[] bancasCalculadas; // da true si todas las bancas estan calculadas por Distrito, ordenados a base de los idDistritos
     private float votosPrimero; //votos del partido que esta primero en votaciones
@@ -16,7 +16,7 @@ public class SistemaCNE {
     private int primero; // idPartido del partido que está en primer lugar
     private int votosTotalesPresidente; // suma total de votos presidenciales
     //private ListaEnlazada mesasRegistradas; CONSULTAR CLASE
-    private ColaPrioridadAcotada[] dHondt; // arbol heap para hacer matriz de h'hont [][]
+    private ColaPrioridadAcotada[] dHondt; // arbol heap para hacer matriz de d'hont [][]
 
     /*
     Inv. Rep/(c': SistemaCNE){ // La comence a la noche pero esta sin terminar --Santi
@@ -26,10 +26,16 @@ public class SistemaCNE {
         diputadosPorDistrito.length == nombresDistristos.length &&
         ultimasMesasDistritos.length == nombresDistristos.length &&
         votosDiputadosPorDistrito.length == nombresDistristos.length &&
+
+        (forall i:int :: 0 <= i < votosDiputadosPorDistrito.length  ==>L votosDiputadosPorDistrito[i].lenght ==  nombresPartidos.length + 1 &&
+        votosDiputadosPorDistrito[i] > 0) &&
+
         bancasDiputadosPorDistrito.length == nombresDistristos.length &&
-        bancasCalculadas == nombresDistristos.length && votosTotalesPresidente > 0 &&
+        (forall i:int :: 0 <= i < bancasDiputadosPorDistrito.length  ==>L bancasDiputadosPorDistrito[i].lenght ==  nombresPartidos.length - 1 && 
+        bancasDiputadosPorDistrito[i] > 0) &&
+        bancasCalculadas == nombresDistristos.length && votosTotalesPresidente >= 0 && (votTotal <= ((sumatoria de votos) -> for blah blah blah))
         0 <= votosPrimero <= votosTotalesPresidente && 0 <= votosSegundo <= votosPrimero &&
-        0 <= primero < nombresPartidos.length && dHondt.length
+        0 <= primero < nombresPartidos.length && dHondt.length == nombresDistristos.length &&
 
         forall i : int :: 0 <= i < |dHondt| ==>
     } 
