@@ -18,6 +18,23 @@ public class SistemaCNE {
     //private ListaEnlazada mesasRegistradas; CONSULTAR CLASE
     private ColaPrioridadAcotada[] dHondt; // arbol heap para hacer matriz de h'hont
 
+    /*
+    Inv. Rep/(c': SistemaCNE){ // La comence a la noche pero esta sin terminar --Santi
+        nombresPartidos.lenght > 0 &&
+        nombresDistristos.lenght > 0 &&
+        votosPresidenciales.lenght == nombresPartidos.lenght &&
+        diputadosPorDistrito.lenght == nombresDistristos.lenght &&
+        ultimasMesasDistritos.lenght == nombresDistristos.lenght &&
+        votosDiputadosPorDistrito.lenght == nombresDistristos.lenght &&
+        bancasDiputadosPorDistrito.lenght == nombresDistristos.lenght &&
+
+
+        votosTotalesPresidente == sum
+
+
+
+    } 
+ */
 // CLASES /////////////////////////////////////////////////////////////////////////////////////////
 
     public class VotosPartido{
