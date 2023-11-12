@@ -10,48 +10,70 @@ public class SistemaCNE {
     private int[] ultimasMesasDistritos; // ordenados a base de los idDistritos
     private int[][] votosDiputadosPorDistrito; // en la ultima posicion de cada fila guarda el total de votos de ese distrito.
     private int[][] bancasDiputadosPorDistrito; // ordenados a base de los idDistritos
-    private boolean[] bancasCalculadas; // da true si todas las bancas estan calculadas por Distrito, ordenados a base de los idDistritos
+    private boolean[] bancasCalculadas; // bancasCalculadas[idDistrito] == true <==> se ejecuto resultadosDiputados() despues de la ultima ejecucion de registrarMesa().
     private float votosPrimero; //votos del partido que esta primero en votaciones
     private float votosSegundo; //votos del partido que esta segundo en votaciones
     private int primero; // idPartido del partido que está en primer lugar
     private int votosTotalesPresidente; // suma total de votos presidenciales
-    private ColaPrioridadAcotada[] dHondt; // arbol heap para hacer matriz de d'hont [][]
+    private ColaPrioridadAcotada[] dHondt; // almacena heaps dHondt para cada distrito
 
     /*
-    Inv. Rep/(c: SistemaCNE){
-        c.nombresPartidos.length > 0 &&
-        c.nombresDistristos.length > 0 &&
 
-        c.votosPresidenciales.length == c.nombresPartidos.length &&
-        (forall i : int :: 0 <= i < c.votosPresidenciales.length ==>L c.votosPresidenciales[i] >= 0) &&
-        
-        c.diputadosPorDistrito.length == c.nombresDistristos.length &&
-        (forall i : int :: 0 <= i < c.diputadosPorDistrito.length ==>L c.diputadosPorDistrito[i] >= 0) &&
-        
-        c.ultimasMesasDistritos.length == c.nombresDistristos.length &&
-        (forall i : int :: 0 <= i < c.ultimasMesasDistritos.length - 1 ==>L c.ultimasMesasDistritos[i] > 0 && c.ultimasMesasDistritos[i] < c.ultimasMesasDistritos[i+1]) &&
-        
-        c.votosDiputadosPorDistrito.length == c.nombresDistristos.length &&
-        (forall i:int :: 0 <= i < c.votosDiputadosPorDistrito.length  ==>L c.votosDiputadosPorDistrito[i].lenght ==  c.nombresPartidos.length + 1 &&
-        votosDiputadosPorDistrito[i] > 0) &&
+    ### Notas respecto de la implementacion del TAD SistemaCNE:
+        - Asumimos como requiere adicional de nuevoSistema() que |nombresPartidos| >= 3 (siguiendo a TP1).
+        - Asumimos como requiere adicional de hayBallotage() que al menos una mesa con al menos un voto ha sido registrada.
+        - Asumimos como requiere adicional de resultadosDiputados() que al menos un partido supera el umbral (siguiendo a TP1).
 
-        c.bancasDiputadosPorDistrito.length == c.nombresDistristos.length &&
-        (forall i:int :: 0 <= i < c.bancasDiputadosPorDistrito.length  ==>L c.bancasDiputadosPorDistrito[i].lenght ==  c.nombresPartidos.length - 1 && 
-        c.bancasDiputadosPorDistrito[i] > 0) &&
-        
-        c.bancasCalculadas == c.nombresDistristos.length && c.votosTotalesPresidente >= 0 &&
-        (c.votosTotalesPresidente == sum i : int :: 0 <= i < c.votosPresidenciales.lenght :: c.votosPresidenciales[i])) &&
+    ### Nota respecto del Invariante de Representacion:
+        -   En este archivo .java incluimos el invariante escrito mayormente en lenguaje formal, pero para 
+            facilitar su legibilidad y justificar algunas elecciones subimos también un .pdf con el invariante
+            comentado en lenguaje natural.
+        -   Como los predicados auxiliares tienen nombres de clarativos, decidimos no incluir sus definiciones en este archivo,
+            pero las incluimos en el .pdf adjunto.
+        -   Para referirnos a la longitud de un array, utilizamos |array| en lugar de array.length.            
+    
+    Inv. Rep.(c: SistemaCNE){
 
-        0 <= c.votosPrimero <= c.votosTotalesPresidente && 0 <= c.votosSegundo <= c.votosPrimero &&
-        0 <= c.primero < c.nombresPartidos.length && 
-        
-        c.dHondt.length == c.nombresDistristos.length &&
-        forall i : int :: 0 <= i < c.dHondt.lenght && c.dHondt[i] != null ==>L c.dHondt.indice == c.nombresDePartidos.length &&
-        forall n : Nodo :: esNodoDe(n, c.dHondt[i]) ==>L (n.coeficiente == c.cantDeVotosDiputados[i][n.idPartido] || c.bancasCalculadas[i] == true )
-    }
+        // 1.- Pedimos que las longitudes de los arrays sean consistentes entre sí.
 
-    pred esNodoDe(n: Nodo, dHondt: DHondt){
-            // n es nodo de dHondt
+        |s.nombreDistritos| = |s.diputadosPorDistrito| = |s.ultimasMesasDistritos| = |s.votosDiputadosPorDistrito| = |s.bancasDiputadosPorDistrito| = |s.bancasCalculadas| = |s.dHondt| > 0 &&
+        |s.nombresPartidos| = |s.votosPresidenciales| >= 3 &&
+        (forall i:int :: 0 <= i < |s.votosDiputadosPorDistrito|  ==>L |s.votosDiputadosPorDistrito[i]| ==  |s.nombresPartidos| + 1) &&
+        (forall i:int :: 0 <= i < |s.bancasDiputadosPorDistrito|  ==>L |s.bancasDiputadosPorDistrito[i]| ==  |s.nombresPartidos| - 1) &&L
+
+        // 2.- Chequeamos algunas propiedades heredadas de los parametros del constructor de SistemaCNE.
+
+        sinRepetidos(s.nombresPartidos) && s.nombresPartidos[|s.nombresPartidos-1|] == “Blanco” &&
+        sinRepetidos(s.nombresDistritos) && 
+        s.ultimasMesasDistritos[0] > 0 && estrictamenteCreciente(s.ultimasMesasDistritos)
+
+        // 3.- Chequeamos la consistencia entre variables que representan la votación presidencial:
+
+
+        (forall i: int :: 0 <= i < |s.votosPresidenciales| ==>L s.votosPresidenciales[i] >= 0) &&
+        (s.votosTotalesPresidente == sumatoria(s.votosPresidenciales, 0, -1) &&
+        esMaximo(s.primero, s.votosPresidenciales) && s.votosPrimero == s.votosPresidenciales[primero] &&
+        (exists i:int :: 0 <= i < |s.votosPresidenciales| &&L esSegundo(i, s.votosPresidenciales) && s.votosPresidenciales[i] = votosSegundo) &&
+
+        // 4.- Chequeamos la consistencia entre variables que representan la votación de diputados:
+
+        (forall i,j:int :: 0 <= i < |s.votosDiputadosPorDistrito| && 0 <= j < |s.votosDiputadosPorDistrito[i]|  ==>L s.votosDiputadosPorDistrito[i][j] >= 0) ) && 
+        (forall i,j:int :: 0 <= i < |s.bancasDiputadosPorDistrito| && 0 <= j < |s.bancasDiputadosPorDistrito[i]|  ==>L s.bancasDiputadosPorDistrito[i][j] >= 0) ) &&
+        (forall i:int :: 0 <= i < |s.diputadosPorDistrito| ==>L s.diputadosPorDistrito[i] >= 0) ) &&
+
+        (forall i:int :: 0 <= i < |s.votosDiputadosPorDistrito| ==>L s.votosDiputadosPorDistrito[i][ultimaPosicion] = sumatoria(s.VotosDiputadosPorDistrito[i], 0,-2)) &&
+
+        forall d:int :: 0 <= d < |s.nombresDistritos| ==>L (
+
+            ( (s.bancasCalculadas[d] = true && s.dHondt(d) != null &&L dHondtEnEstadoFinal(s.dHondt[d], d)  &&
+            asignacionCorrectaDeBancas(s, d) )    || 
+            
+            ( (s.bancasCalculadas[d] = false &&  s.dHondt(d) != null &&L dHondtEnEstadoInicial(s.dHondt[d], d) && 
+            (sumatoria(s.bancasDiputadosPorDistrito[d], 0,-1) = 0 || sumatoria(s.bancasDiputadosPorDistrito[d], 0,-1) = s.diputadosPorDistrito[d]) ) ||
+            
+            (   s.bancasCalculadas[d] = false && s.dHondt(d) == null && ( forall i:int :: 0 <= j < |s.votosDiputadosPorDistrito[d]| 
+             ==>L (s.votosDiputadosPorDistrito[d][i] = 0 && s.bancasDiputadosPorDistrito[d][i] = 0))  ) 
+                
         }
  */
 
@@ -99,15 +121,15 @@ public class SistemaCNE {
 
 // FUNCIONES DEL ENUNCIADO /////////////////////////////////////////////////////////////////////////////////////////
 
-    public SistemaCNE(String[] nombresDistritos, int[] diputadosPorDistrito, String[] nombresPartidos, int[] ultimasMesasDistritos) { // funcion contructora
-        // Complejidad: O(n) Debido a que todas las complejidades se suman y queda la complejidad maxima
+    public SistemaCNE(String[] nombresDistritos, int[] diputadosPorDistrito, String[] nombresPartidos, int[] ultimasMesasDistritos) {
+        // Complejidad: O(P*D) Debido a que todas las complejidades se suman y queda la complejidad maxima
         this.nombresDistristos = nombresDistritos.clone();  // O(D). Usamos .clone() para simplificar el codigo, asumimos que la complejidad no puede ser peor a copiar el array con un ciclo = O(n). 
         this.diputadosPorDistrito = diputadosPorDistrito.clone(); // O(D)
         this.nombresPartidos = nombresPartidos.clone(); // O(P)
         this.ultimasMesasDistritos = ultimasMesasDistritos.clone(); // O(D)
         votosPresidenciales = new int[nombresPartidos.length]; // O(P) Debido a que Java crea e inicializa el array en O(n)
-        votosDiputadosPorDistrito = new int[nombresDistristos.length][nombresPartidos.length + 1]; // O(D * P) Debido a que java inicializa una Matriz (Lista de listas) en O(n * m)
-        bancasDiputadosPorDistrito = new int[nombresDistritos.length][nombresPartidos.length - 1]; // O(D * P)
+        votosDiputadosPorDistrito = new int[nombresDistristos.length][nombresPartidos.length + 1]; // O(P * D) Debido a que java inicializa una Matriz (Lista de listas) en O(n * m)
+        bancasDiputadosPorDistrito = new int[nombresDistritos.length][nombresPartidos.length - 1]; // O(P * D)
         bancasCalculadas = new boolean[nombresDistritos.length];  // O(D) 
         votosPrimero = 0; // O(1)
         votosSegundo = 0; // O(1)
@@ -141,16 +163,16 @@ public class SistemaCNE {
         */
         int indexDistrito = BusquedaBinDistrito(idMesa); //O(log(D))
         
-        //Recorrer actaMesa, Complejidad O(P) Debido a que todas lsa operaciones de dentro del for son O(1) y se repite P veces, por ende O(P) * O(1) = O(P)
+        //Recorrer actaMesa: Complejidad O(P) Debido a que todas las operaciones de dentro del for son O(1) y se repite P veces.
         for (int i = 0; i < actaMesa.length; i++){ //O(1) -> Guarda
-            //Actualizar votos presidenciales (para el partido y totales)
+            //Actualizar votos presidenciales (para el partido y totales): O(1)
             votosPresidenciales[i] += actaMesa[i].presidente; 
             votosTotalesPresidente += actaMesa[i].presidente; 
-            //Actualizar votos diputados (para el partido y totales)
+            //Actualizar votos diputados (para el partido y totales): O(1)
             votosDiputadosPorDistrito[indexDistrito][i] += actaMesa[i].diputados; 
             votosDiputadosPorDistrito[indexDistrito][votosDiputadosPorDistrito[indexDistrito].length-1] += actaMesa[i].diputados; 
 
-            //Actualizar variables para calcular el ballotage en O(1), Debido a que las guardas y las operaciones toman O(1)
+            //Actualizar variables para calcular el ballotage: O(1), Debido a que las guardas y las operaciones toman O(1)
             if (votosPresidenciales[i] >= votosPrimero && i == primero){ 
                 votosPrimero = votosPresidenciales[i]; 
             } else if (votosPresidenciales[i] >= votosPrimero && i != primero){ 
@@ -162,9 +184,9 @@ public class SistemaCNE {
             }
         }   
         
-        //Prepara resultadosDiputados() 
+        //Preparar resultadosDiputados() 
         
-        //1.- Crea array con coeficientes iniciales        
+        //1.- Crear array con coeficientes iniciales        
         Nodo[] coeficientes = new Nodo[nombresPartidos.length-1]; // O(P)
         //Crea e inicializa los nodos. Complejidad O(P), Debido a que las operaciones dentro del for son O(1) y se repite P veces, por ende O(P) * O(1) = O(P)
         for (int i=0; i<coeficientes.length; i++) { // O(1) -> Guarda
@@ -190,15 +212,21 @@ public class SistemaCNE {
         return votosDiputadosPorDistrito[idDistrito][idPartido];
     }
 
-    public int[] resultadosDiputados(int idDistrito){ 
+    public int[] resultadosDiputados(int idDistrito){
+        /* Complejidad: O(Dd * log(P))
+         * La operacion mas costosa del ciclo es la llamada a modificarMaximo (L.217), que tiene una complejidad
+         * de O(log(#nodos)). Como el heap que representa a la matriz dHondt tiene siempre P nodos, cada llamada a 
+         * modificarMaximo tiene una complejidad de O(log(P)). 
+         * Dado que el ciclo se ejecuta Dd veces, la complejidad resultante es O(Dd * log(P)).
+         */
         if (!bancasCalculadas[idDistrito]) { // O(1)
             int i = 0; //Son las bancas asignadas, O(1)
 
             while (i < diputadosEnDisputa(idDistrito)){
-                Nodo ganador = (Nodo) dHondt[idDistrito].maximo(); // O(1) Debido a que el MaxHeap saca Max en O(1)
+                Nodo ganador = (Nodo) dHondt[idDistrito].maximo(); // O(1), justificado en clase ColaDePrioridadAcotada.
                 bancasDiputadosPorDistrito[idDistrito][ganador.idPartido]++; // O(1)
                 ganador.coeficiente = votosDiputadosPorDistrito[idDistrito][ganador.idPartido]/(bancasDiputadosPorDistrito[idDistrito][ganador.idPartido] + 1); // O(1)
-                dHondt[idDistrito].modificarMaximo(ganador); // O(log(n)) Debido a la complejidad demostrada en la clase ColaDePrioridadAcotada
+                dHondt[idDistrito].modificarMaximo(ganador); // O(log(P))
                 i++; 
             }
             bancasCalculadas[idDistrito] = true; // O(1)
@@ -208,7 +236,7 @@ public class SistemaCNE {
     }
 
     public boolean hayBallotage(){
-        // Complejidad: O(1),
+        // Complejidad: O(1)
         float porcPrimero = (votosPrimero/votosTotalesPresidente)*100; //O(1) Debido a que es una operacion matematica
         float porcSegundo = (votosSegundo/votosTotalesPresidente)*100; //O(1)
         boolean res = true; //O(1) Debido a que inicializo una var de tipo primitivo
@@ -222,24 +250,31 @@ public class SistemaCNE {
 
 // FUNCIONES AUXILIARES /////////////////////////////////////////////////////////////////////////////////////////
 
-    private Boolean enRango(int min, int max, int elem){ // funcion generica para verificar si un numero esta entre un rango de numeros, Coplejidad: O(1)
+    private Boolean enRango(int min, int max, int elem){ 
+        // Verifica si un numero esta entre un rango de numeros, Complejidad: O(1)
         return (elem >= min && elem < max);    
         
     }
 
-    private int BusquedaBinDistrito(int idMesa){ // Busca el distrito a base del idMesa, Complejidad O(log(D)) Debido a que la busqueda binaria para hallar el distrito tiene complejidad O(log(n))
+    private int BusquedaBinDistrito(int idMesa){ // Busca el distrito a base del idMesa.
+        /* Complejidad:  O(log(D))
+        * La complejidad esta dada por el ciclo (L260) que, en el peor caso, se ejecuta log2(D)+1 veces debido
+        * a que el espacio inicial de busqueda dado por |ultimasMesasDistritos| se divide por 2 hasta quedar 
+        * reducido a una secuencia de un unico elemento. 
+        */ 
+        
         int indiceInicio = 0; // O(1)
-        int indiceFinal = ultimasMesasDistritos.length-1; // O(1) Debido a que java implementa .length en O(1)
+        int indiceFinal = ultimasMesasDistritos.length-1; // O(1)
         int medio; // O(1)
         int i = 0; // O(1)
         int longitud = ultimasMesasDistritos.length; // O(1)
 
-        while(indiceInicio<=indiceFinal && longitud != 1){ // O(log(n)) Debido a que el while se va a ejecutar log(n) veces como peor caso y dentro solo hace operaciones O(1)
+        while(indiceInicio<=indiceFinal && longitud != 1){ // En el peor caso, log2(D) + 1 iteraciones.
             medio = (indiceInicio+indiceFinal)/2; // O(1)
             
             int rangoMenor = ultimasMesasDistritos[medio]; // O(1)
             int rangoMayor = ultimasMesasDistritos[medio + 1]; // O(1)
-            if (enRango(rangoMenor, rangoMayor, idMesa)){ // O(1) Debido a que las guardas y las operaciones toman O(1)
+            if (enRango(rangoMenor, rangoMayor, idMesa)){ // Guardas y operaciones toman O(1)
                 i = medio + 1; 
                 break; 
             }
@@ -252,7 +287,8 @@ public class SistemaCNE {
         return i; // O(1)
     }
 
-    private boolean superaElUmbral(int idDistrito, int idPartido) { //Devuelve si un partido supera el umbral necesario para sumar bancas, Complejidad: O(1)
+    private boolean superaElUmbral(int idDistrito, int idPartido) { 
+        //Devuelve true si un partido supera el umbral necesario para sumar bancas, Complejidad: O(1)
         return votosDiputadosPorDistrito[idDistrito][idPartido]*100/votosDiputadosPorDistrito[idDistrito][votosDiputadosPorDistrito[idDistrito].length-1] >= 3;
     }
 }

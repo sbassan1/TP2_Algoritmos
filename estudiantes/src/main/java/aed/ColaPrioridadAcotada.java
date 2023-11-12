@@ -110,7 +110,10 @@ public class ColaPrioridadAcotada<T extends Comparable<T>> {
        // }
     }
 
-    //Devuelve el máximo, sin desencolarlo.
+    //Devuelve el máximo, sin desencolarlo. Como devuelve una referencia a la representacion interna de la 
+    //clase, este metodo no preserva el encapsulamiento.
+    //Una idea para solucionar el problema seria pedir que los objetos de tipo T tengan un metodo .clone() y 
+    //hacer una copia antes de devolverlos.
     public T maximo() {
         //complejidad = O(1)
         return elems[0];
